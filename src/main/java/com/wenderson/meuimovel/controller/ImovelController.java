@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/imoveis")
 public class ImovelController {
 
     private final ImovelService service;
@@ -21,13 +21,16 @@ public class ImovelController {
         this.service = service;
     }
 
-    @PostMapping
+    // Cadastra um imóvel vinculado a uma família.
+    // Somente um administrador ativo pode realizar o cadastro.
+    @PostMapping("/familias/{familiaId}/imoveis")
     public ResponseEntity<DadosDetalhamentoImovel> cadastrar(
+            @PathVariable UUID familiaId,
             @RequestBody @Valid DadosCadastroImovel dados,
             UriComponentsBuilder uriBuilder
     ) {
 
-        var imovel = service.cadastrar(dados);
+        var imovel = service.cadastrar(familiaId, dados);
 
         var uri = uriBuilder
                 .path("/imoveis/{id}")
@@ -39,7 +42,8 @@ public class ImovelController {
                 .body(new DadosDetalhamentoImovel(imovel));
     }
 
-    @GetMapping
+    // Lista somente imóveis autorizados para o usuário.
+    @GetMapping("/imoveis")
     public ResponseEntity<List<DadosDetalhamentoImovel>> listar() {
 
         var imoveis = service.listar();
@@ -51,7 +55,8 @@ public class ImovelController {
         return ResponseEntity.ok(dados);
     }
 
-    @GetMapping("/{id}")
+    // Consulta um imóvel respeitando a autorização familiar.
+    @GetMapping("/imoveis/{id}")
     public ResponseEntity<DadosDetalhamentoImovel> detalhar(
             @PathVariable Long id
     ) {
@@ -63,11 +68,13 @@ public class ImovelController {
         );
     }
 
-    @PatchMapping("/{id}")
+    // Atualiza parcialmente um imóvel autorizado.
+    @PatchMapping("/imoveis/{id}")
     public ResponseEntity<DadosDetalhamentoImovel> atualizar(
             @PathVariable Long id,
-            @RequestBody DadosAtualizacaoImovel dados
+            @RequestBody @Valid DadosAtualizacaoImovel dados
     ) {
+
         var imovel = service.atualizar(id, dados);
 
         return ResponseEntity.ok(

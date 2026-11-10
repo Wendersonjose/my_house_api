@@ -34,4 +34,22 @@ public class AutorizacaoFamiliaService {
             );
         }
     }
+
+    public void verificarAdministrador(
+            UUID familiaId,
+            UUID usuarioId
+    ) {
+
+        boolean administradorAtivo =
+                membroFamiliaRepository.existeAdministradorAtivo(
+                        familiaId,
+                        usuarioId
+                );
+
+        if (!administradorAtivo) {
+            throw new AccessDeniedException(
+                    "Usuario sem permissao administrativa nesta familia"
+            );
+        }
+    }
 }
