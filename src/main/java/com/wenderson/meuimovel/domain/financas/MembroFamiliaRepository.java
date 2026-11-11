@@ -3,6 +3,7 @@ package com.wenderson.meuimovel.domain.financas;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -64,5 +65,37 @@ public class MembroFamiliaRepository {
 
         return Boolean.TRUE.equals(resultado);
     }
+
+
+    public List<DadosFamiliaUsuario> listarFamiliasAtivas(UUID usuarioId) {
+
+        var sql = """
+            SELECT
+                f.id,
+                f.nome,
+                m.papel
+            FROM financas.fin_familia f
+            INNER JOIN financas.fin_membro m
+                ON m.familia_id = f.id
+            WHERE m.usuario_id = :usuarioId
+              AND m.ativo = TRUE
+            ORDER BY f.nome, f.id
+            """;
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> resultados = entityManager
+                .createNativeQuery(sql)
+                .setParameter("usuarioId", usuarioId)
+                .getResultList();
+
+        return resultados.stream()
+                .map(linha -> new DadosFamiliaUsuario(
+                        (UUID) linha[0],
+                        (String) linha[1],
+                        (String) linha[2]
+                ))
+                .toList();
+    }
+
 }
 
