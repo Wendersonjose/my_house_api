@@ -29,4 +29,25 @@ public class ImovelFamiliaRepository {
                 .setParameter("imovel_id", imovelId)
                 .executeUpdate();
     }
+    public boolean existeVinculo(
+            UUID familiaId,
+            Long imovelId
+    ) {
+
+        var sql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM financas.fin_imovel_familia
+                WHERE familia_id = :familiaId
+                  AND imovel_id = :imovelId
+            )
+            """;
+
+        return Boolean.TRUE.equals(
+                entityManager.createNativeQuery(sql)
+                        .setParameter("familiaId", familiaId)
+                        .setParameter("imovelId", imovelId)
+                        .getSingleResult()
+        );
+    }
 }

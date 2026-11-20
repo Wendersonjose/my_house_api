@@ -2,6 +2,7 @@ package com.wenderson.meuimovel.infra.exception;
 
 import com.wenderson.meuimovel.domain.imovel.ImovelDuplicadoException;
 import com.wenderson.meuimovel.domain.imovel.ImovelNaoEncontradoException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -74,5 +75,17 @@ public class TratadorDeErros {
             String mensagem,
             List<DetalheErro> erros
     ) {
+    }
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ResponseEntity<DadosErro> tratarErroConcorrencia(
+            OptimisticLockingFailureException exception
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new DadosErro(
+                        "O registro foi alterado por outra operação. "
+                                + "Atualize os dados e tente novamente."
+                ));
     }
 }
