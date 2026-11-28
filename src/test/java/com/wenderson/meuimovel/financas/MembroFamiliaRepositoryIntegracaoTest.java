@@ -4,6 +4,7 @@ package com.wenderson.meuimovel.financas;
 import com.wenderson.meuimovel.domain.financas.MembroFamiliaRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
@@ -13,14 +14,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest(properties = {
-        // Utiliza exclusivamente o PostgreSQL local.
-        "spring.datasource.url=jdbc:postgresql://localhost:5432/meu_imovel_dev",
-
-        // Impede migrations e alteracoes automaticas no schema.
-        "spring.flyway.enabled=false",
-        "spring.jpa.hibernate.ddl-auto=none"
-})
+@DataJpaTest
+@ActiveProfiles("test")
 @AutoConfigureTestDatabase(
         replace = AutoConfigureTestDatabase.Replace.NONE
 )

@@ -15,15 +15,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(properties = {
-        "spring.datasource.url=jdbc:postgresql://localhost:5432/meu_imovel_dev",
-        "spring.datasource.username=${DB_USERNAME}",
-        "spring.datasource.password=${DB_PASSWORD}",
-        "spring.flyway.url=jdbc:postgresql://localhost:5432/meu_imovel_dev",
-        "spring.flyway.user=${DB_USERNAME}",
-        "spring.flyway.password=${DB_PASSWORD}"
-})
-@ActiveProfiles("dev")
+@SpringBootTest
+@ActiveProfiles("test")
 @Transactional
 class CategoriaRepositoryIntegracaoTest {
 
@@ -47,9 +40,9 @@ class CategoriaRepositoryIntegracaoTest {
         );
 
         assertEquals(
-                "meu_imovel_dev",
+                "meu_imovel_test",
                 bancoAtual,
-                "Os testes devem utilizar somente o banco local."
+                "Os testes devem utilizar exclusivamente o banco de testes."
         );
 
         familiaId = UUID.randomUUID();

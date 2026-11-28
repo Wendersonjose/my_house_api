@@ -3,6 +3,7 @@ package com.wenderson.meuimovel.domain.financas;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.jdbc.test.autoconfigure.JdbcTest;
@@ -16,11 +17,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@JdbcTest(properties = {
-        "spring.datasource.url=jdbc:postgresql://localhost:5432/meu_imovel_dev",
-        "spring.flyway.enabled=false",
-        "spring.sql.init.mode=never"
-})
+@JdbcTest
+@ActiveProfiles("test")
 @AutoConfigureTestDatabase(
         replace = AutoConfigureTestDatabase.Replace.NONE
 )
@@ -47,7 +45,7 @@ class ResumoCompetenciaRepositoryIntegracaoTest {
                 "SELECT current_database()", String.class
         );
 
-        assertEquals("meu_imovel_dev", banco);
+        assertEquals("meu_imovel_test", banco);
 
         familiaId = UUID.randomUUID();
         usuarioId = UUID.randomUUID();

@@ -4,6 +4,7 @@ package com.wenderson.meuimovel.domain.imovel;
 import com.wenderson.meuimovel.domain.financas.AutorizacaoFamiliaService;
 import com.wenderson.meuimovel.infra.security.UsuarioAutenticado;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
@@ -20,12 +21,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-@DataJpaTest(properties = {
-        "spring.datasource.url=jdbc:postgresql://localhost:5432/meu_imovel_dev",
-        "spring.datasource.username=postgres",
-        "spring.flyway.enabled=false",
-        "spring.jpa.hibernate.ddl-auto=none"
-})
+@DataJpaTest
+@ActiveProfiles("test")
 @AutoConfigureTestDatabase(
         replace = AutoConfigureTestDatabase.Replace.NONE
 )
@@ -59,7 +56,7 @@ class ImovelServiceRollbackIntegracaoTest {
                 String.class
         );
 
-        assertEquals("meu_imovel_dev", banco);
+        assertEquals("meu_imovel_test", banco);
 
         UUID familiaId = UUID.randomUUID();
         UUID usuarioId = UUID.randomUUID();

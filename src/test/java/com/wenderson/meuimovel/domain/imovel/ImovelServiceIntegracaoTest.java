@@ -4,12 +4,14 @@ package com.wenderson.meuimovel.domain.imovel;
 import com.wenderson.meuimovel.domain.financas.AutorizacaoFamiliaService;
 import com.wenderson.meuimovel.domain.financas.MembroFamiliaRepository;
 import com.wenderson.meuimovel.infra.security.UsuarioAutenticado;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
@@ -18,13 +20,8 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@DataJpaTest(properties = {
-        "spring.datasource.url=jdbc:postgresql://localhost:5432/meu_imovel_dev",
-        "spring.datasource.username=postgres",
-        "spring.flyway.enabled=false",
-        "spring.jpa.hibernate.ddl-auto=none"
-})
-
+@DataJpaTest
+@ActiveProfiles("test")
 @AutoConfigureTestDatabase(
         replace = AutoConfigureTestDatabase.Replace.NONE
 )
@@ -49,18 +46,22 @@ class ImovelServiceIntegracaoTest {
     @Test
     void deveCadastrarImovelEAssociarAFamilia() {
 
-        // Confirma o banco antes de executar INSERTs.
+        // Confirma que o teste utiliza exclusivamente o banco de testes.
         String banco = jdbcTemplate.queryForObject(
                 "SELECT current_database()",
                 String.class
         );
 
-        assertEquals("meu_imovel_dev", banco);
+        assertEquals(
+                "meu_imovel_test",
+                banco,
+                "O teste não pode acessar o banco de desenvolvimento."
+        );
 
         UUID familiaId = UUID.randomUUID();
         UUID usuarioId = UUID.randomUUID();
 
-        // Cria uma família exclusivamente para o teste.
+        // Cria uma família para o teste.
         jdbcTemplate.update("""
                 INSERT INTO financas.fin_familia (id, nome)
                 VALUES (?, 'Familia Teste Imovel')
@@ -115,7 +116,7 @@ class ImovelServiceIntegracaoTest {
 
         assertNotNull(imovel.getId());
 
-        // Verifica a associação no PostgreSQL real.
+        // Verifica a associação no PostgreSQL de testes.
         Integer quantidade = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
                 FROM financas.fin_imovel_familia
